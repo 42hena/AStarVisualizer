@@ -9,6 +9,7 @@
 */
 
 #include "AStar/Vector2.h"
+#include "Event/InputEvent.h"
 
 #define MAX_LOADSTRING 100
 
@@ -129,8 +130,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    wchar_t messageBuffer[256];
-
     switch (message)
     {
     case WM_COMMAND:
@@ -168,62 +167,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:
         {
-            int mousePosX = LOWORD(lParam);
-            int mousePosY = HIWORD(lParam);
-
-            Vector2 curPos(mousePosX, mousePosY);
-
-            _stprintf_s(messageBuffer, _T("왼쪽 마우스 클릭 위치: (%d, %d)\n"), curPos._x, curPos._y);
-            OutputDebugString(messageBuffer);
-
-            break;
+            MouseLeftButtonDownProcess(lParam);
         }
+        break;
     case WM_MBUTTONDOWN:
         {
-            int mousePosX = LOWORD(lParam);
-            int mousePosY = HIWORD(lParam);
-
-            Vector2 curPos(mousePosX, mousePosY);
-
-            _stprintf_s(messageBuffer, _T("가운데 마우스 클릭 위치: (%d, %d)\n"), curPos._x, curPos._y);
-            OutputDebugString(messageBuffer);
-
+            MouseMiddleButtonDownProcess(lParam);
         }
         break;
     case WM_RBUTTONDOWN:
         {
-            int mousePosX = LOWORD(lParam);
-            int mousePosY = HIWORD(lParam);
-
-            Vector2 curPos(mousePosX, mousePosY);
-
-            _stprintf_s(messageBuffer, _T("오른쪽 마우스 클릭 위치: (%d, %d)\n"), curPos._x, curPos._y);
-            OutputDebugString(messageBuffer);
+            MouseRightButtonDownProcess(lParam);
         }
         break;
     case WM_MOUSEMOVE:
         {
-            int mousePosX = LOWORD(lParam);
-            int mousePosY = HIWORD(lParam);
-
-            Vector2 curPos(mousePosX, mousePosY);
-
-            _stprintf_s(messageBuffer, _T("마우스 움직임 위치: (%d, %d)\n"), curPos._x, curPos._y);
-            OutputDebugString(messageBuffer);
+            MouseMovedProcess(lParam);
         }
         break;
     case WM_KEYDOWN:
         {
-            switch (wParam) {
-            case VK_SPACE:
-            {
-                _stprintf_s(messageBuffer, _T("스페이스 바\n"));
-                OutputDebugString(messageBuffer);
-                break;
-            }
-            default:
-                break;
-            }
+            KeyboardProcess(wParam);
         }
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
