@@ -124,12 +124,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AStarVisualizer.h" />
+    <ClInclude Include="AStar\AStar.h" />
+    <ClInclude Include="AStar\Vector2.h" />
+    <ClInclude Include="Core\GlobalCore.h" />
+    <ClInclude Include="Event\InputEvent.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStarVisualizer.cpp" />
+    <ClCompile Include="AStar\AStar.cpp" />
+    <ClCompile Include="AStar\Vector2.cpp" />
+    <ClCompile Include="Core\GlobalCore.cpp" />
+    <ClCompile Include="Event\InputEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AStarVisualizer.rc" />
