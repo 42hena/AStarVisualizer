@@ -10,6 +10,7 @@
 
 #include "AStar/Vector2.h"
 #include "Event/InputEvent.h"
+#include "GDIManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -49,6 +50,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
+    /* GDI 객체 생성 */
+    GDIManager::Create();
+    AddDefaultBrushes();
+
     // 기본 메시지 루프입니다:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -57,8 +62,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        else
+        {
+
+        }
     }
 
+    /* GDI 객체 해제 */
+    GDIManager::Destroy();
     return (int) msg.wParam;
 }
 
@@ -153,7 +164,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+            PaintProcess(hdc, ps);
             EndPaint(hWnd, &ps);
         }
         break;
@@ -168,6 +179,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
         {
             MouseLeftButtonDownProcess(lParam);
+            InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
     case WM_MBUTTONDOWN:
@@ -175,19 +187,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             MouseMiddleButtonDownProcess(lParam);
         }
         break;
+    case WM_MBUTTONUP:
+        {
+            MouseMiddleButtonUpProcess(lParam);
+        }
+        break;
     case WM_RBUTTONDOWN:
         {
             MouseRightButtonDownProcess(lParam);
+            InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
     case WM_MOUSEMOVE:
         {
             MouseMovedProcess(lParam);
+            InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
     case WM_KEYDOWN:
         {
             KeyboardProcess(wParam);
+            InvalidateRect(hWnd, NULL, FALSE);
         }
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

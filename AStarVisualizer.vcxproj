@@ -125,19 +125,30 @@
   <ItemGroup>
     <ClInclude Include="AStarVisualizer.h" />
     <ClInclude Include="AStar\AStar.h" />
+    <ClInclude Include="AStar\Board.h" />
     <ClInclude Include="AStar\Vector2.h" />
     <ClInclude Include="Core\GlobalCore.h" />
+    <ClInclude Include="Core\VisualizerEngine.h" />
     <ClInclude Include="Event\InputEvent.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GDIManager.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Utils\DrawUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStarVisualizer.cpp" />
     <ClCompile Include="AStar\AStar.cpp" />
+    <ClCompile Include="AStar\Board.cpp" />
     <ClCompile Include="AStar\Vector2.cpp" />
     <ClCompile Include="Core\GlobalCore.cpp" />
+    <ClCompile Include="Core\VisualizerEngine.cpp" />
     <ClCompile Include="Event\InputEvent.cpp" />
+    <ClCompile Include="GDIManager.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Temp.cpp" />
+    <ClCompile Include="Utils\DrawUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AStarVisualizer.rc" />
