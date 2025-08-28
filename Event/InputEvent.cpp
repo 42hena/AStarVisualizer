@@ -4,7 +4,7 @@
 #include "../Utils/DrawUtils.h"
 #include "../Core/GlobalCore.h"
 #include "../AStar/AStar.h"
-
+#include "../InputManager.h"
 #include <tchar.h>
 #include <Windows.h>
 
@@ -38,6 +38,10 @@ void MouseLeftButtonDownProcess(LPARAM lParam)
         global_astar.SetDestFalseFlag();
     }
     global_board._board[boardYIndex][boardXIndex] = 1;
+
+
+    // Test
+    InputManager::GetInstance()->SetInput(VK_LBUTTON);
 }
 
 void MouseMiddleButtonDownProcess(LPARAM lParam)
@@ -72,7 +76,7 @@ void MouseRightButtonDownProcess(LPARAM lParam)
     // 시작점이 있는 지 확인
     if (global_astar.HasStartPos() == true) {
         // None으로 밀기
-        global_board._board[global_astar.GetDestPosY()][global_astar.GetDestPosX()] = 0;
+        global_board._board[global_astar.GetDestPosY()][global_astar.GetDestPosX()] = None;
     }
 
     // 플래그 변경
@@ -82,12 +86,12 @@ void MouseRightButtonDownProcess(LPARAM lParam)
     Vector2 newPosition(boardXIndex, boardYIndex);
     global_astar.SetDestPosition(newPosition);
 
-    if (global_board._board[boardYIndex][boardXIndex] == 1) {
+    if (global_board._board[boardYIndex][boardXIndex] == Start) {
         global_astar.SetStartFalseFlag();
     }
 
     // board 바꾸기.
-    global_board._board[boardYIndex][boardXIndex] = 3;
+    global_board._board[boardYIndex][boardXIndex] = End;
 }
 
 void MouseMovedProcess(LPARAM lParam)
@@ -101,10 +105,10 @@ void MouseMovedProcess(LPARAM lParam)
         int boardPoxX = mousePosX / 50;
         int boardPoxY = mousePosY / 50;
 
-        if (global_board._board[boardPoxY][boardPoxX] == 1) {
+        if (global_board._board[boardPoxY][boardPoxX] == Start) {
             global_astar.SetStartFalseFlag();
         }
-        if (global_board._board[boardPoxY][boardPoxX] == 3) {
+        if (global_board._board[boardPoxY][boardPoxX] == End) {
             global_astar.SetDestFalseFlag();
         }
         global_board._board[boardPoxY][boardPoxX] = Wall; // TODO

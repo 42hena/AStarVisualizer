@@ -80,12 +80,13 @@ void AStar::InitAStar()
 	newNode->parentNode = nullptr;
 	newNode->gValue = 0;
 	newNode->hValue = CalHValue(_startPosition);
-	newNode->fValue = 0;
+	newNode->fValue = newNode->hValue;
 	newNode->_nodePos = _startPosition;
 
 	// 시작 노드를 openList에 삽입
 	_openList.push_back(newNode);
 
+ 	global_board._board[newNode->_nodePos._y][newNode->_nodePos._x] = Open;
 	global_board._weight[newNode->_nodePos._y][newNode->_nodePos._x].f = newNode->fValue;
 	global_board._weight[newNode->_nodePos._y][newNode->_nodePos._x].g = newNode->gValue;
 	global_board._weight[newNode->_nodePos._y][newNode->_nodePos._x].h = newNode->hValue;
@@ -100,8 +101,7 @@ void AStar::SearchDest()
 
 	// case 더 이상 탐색할 노드가 없음
 	if (_openList.empty()) {
-		DebugBreak();
-		_state = NoneLevel;
+		_state = ClearLevel;
 		return;
 	}
 
@@ -128,7 +128,7 @@ void AStar::SearchDest()
 	// 2. OpenList에서 삭제.
 	_openList.erase(minIter);
 
-	swprintf_s(messageBuffer, 100, L"Pop (%d %d)\n", pMinNode->_nodePos._x, pMinNode->_nodePos._y);
+	swprintf_s(messageBuffer, 100, L"Pop (%d %d) f:%.3f g:%.3f h:%.3f\n", pMinNode->_nodePos._y, pMinNode->_nodePos._x, pMinNode->fValue, pMinNode->gValue, pMinNode->hValue);
 	OutputDebugString(messageBuffer);
 
 	// 3. CloseList에 존재하는 지 확인.
@@ -158,7 +158,7 @@ void AStar::SearchDest()
 	// 5. 방문 가능한 방향 전부 확인.
 	std::vector<DirInfo> dirInfo{
 		{Vector2(1, 0), 1.0f},{Vector2(-1, 0), 1.0f},{Vector2(0, 1), 1.0f},{Vector2(0, -1), 1.0f},
-		{Vector2(1, 1), 1.414f},{Vector2(1, -1), 1.414},{Vector2(-1, 1), 1.414},{Vector2(-1, -1), 1.414},
+		{Vector2(1, 1), 1.414f},{Vector2(1, -1), 1.414f},{Vector2(-1, 1), 1.414f},{Vector2(-1, -1), 1.414f},
 	};
 	
 	for (int dir = 0; dir < 8; ++dir)
@@ -168,6 +168,11 @@ void AStar::SearchDest()
 		OutputDebugString(messageBuffer);*/
 		// 원하는 칸인지 확인
 		if (nextPos._x < 0 || nextPos._x >= 20 || nextPos._y < 0 || nextPos._y >= 20) {
+			continue;
+		}
+
+		// 벽인지 확인
+		if (global_board._board[nextPos._y][nextPos._x] == Wall) {
 			continue;
 		}
 		
@@ -185,13 +190,15 @@ void AStar::SearchDest()
 			continue;
 		}
 
-		// TODO: 벽인지 확인 
 
 
 		// 다음 가중치 계산
 		float nextGValue = pMinNode->gValue + dirInfo[dir].value;
 		float nextHValue = CalHValue(nextPos);
 		float nextFValue = nextGValue + nextHValue;
+
+		swprintf_s(messageBuffer, 100, L"Check (%d %d) f:%.3f g:%.3f h:%.3f\n", nextPos._y, nextPos._x, nextFValue, nextGValue, nextHValue);
+		OutputDebugString(messageBuffer);
 
 		// case 이미 OpenList에 들어있으면서 값이 작은 경우
 		bool findNodeFlag = false;
@@ -200,12 +207,13 @@ void AStar::SearchDest()
 			Node* cmpNode = *openListIter;
 			if (cmpNode->_nodePos == nextPos)
 			{
+				int a = 0;
+				findNodeFlag = true;
 				if (cmpNode->fValue > nextFValue)
 				{
-					cmpNode->fValue = nextFValue;
+ 					cmpNode->fValue = nextFValue;
 					cmpNode->gValue = nextGValue;
 					cmpNode->hValue = nextHValue;
-					findNodeFlag = true;
 					break;
 				}
 			}
@@ -225,7 +233,7 @@ void AStar::SearchDest()
 			global_board._weight[pOpenNode->_nodePos._y][pOpenNode->_nodePos._x].h = pOpenNode->hValue;
 
 			
-			swprintf_s(messageBuffer, 100, L"Add Open(%d %d)\n", nextPos._x, nextPos._y);
+			swprintf_s(messageBuffer, 100, L"Add Open(%d %d) f:%.3f g:%.3f h:%.3f\n", nextPos._y, nextPos._x, pOpenNode->fValue, pOpenNode->gValue, pOpenNode->hValue);
 			OutputDebugString(messageBuffer);
 
 			_openList.push_back(pOpenNode);
@@ -250,11 +258,22 @@ void AStar::RecordPath()
 		lastNode = nextNode;
 	}
 
-	_state = NoneLevel;
+	_state = ClearLevel;
 }
 
 void AStar::ClearBoard()
 {
+	for (auto node : _openList)
+	{
+		delete node;
+	}
+	_openList.clear();
+	for (auto node : _closeList)
+	{
+		delete node;
+	}
+	_closeList.clear();
+
 	for (int i = 0; i < 50; ++i)
 	{
 		for (int j = 0; j < 50; ++j)
@@ -267,6 +286,8 @@ void AStar::ClearBoard()
 	}
 	SetStartFalseFlag();
 	SetDestFalseFlag();
+
+	_state = NoneLevel;
 }
 
 void AStar::SearchWithList()
@@ -295,5 +316,5 @@ void AStar::SearchWithList()
 
 float AStar::CalHValue(const Vector2& pos) const
 {
-	return abs(pos._x - GetDestPosX()) + abs(pos._y - GetDestPosY());
+	return static_cast<float>(abs(pos._x - GetDestPosX()) + abs(pos._y - GetDestPosY()));
 }
