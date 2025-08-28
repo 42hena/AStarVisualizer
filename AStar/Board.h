@@ -2,9 +2,9 @@
 
 struct Weight
 {
-	double f = 0.0;
-	double g = 0.0;
-	double h = 0.0;
+	float f = 0.0;
+	float g = 0.0;
+	float h = 0.0;
 };
 
 enum ObjectState
