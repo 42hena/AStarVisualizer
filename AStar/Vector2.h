@@ -30,6 +30,12 @@ public:
     Vector2& operator*=(const Vector2& rhs);
     Vector2& operator/=(const Vector2& rhs);
 
+    bool operator<(const Vector2& rhs) const
+    {
+        if (_x == rhs._x)
+            return _y > rhs._y;
+        return _x > rhs._x;
+    }
 public:
     const char* ToString();
 

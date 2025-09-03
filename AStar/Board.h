@@ -18,6 +18,7 @@ enum ObjectState
 	Path
 };
 
+class Node;
 class Board
 {
 public:
@@ -36,4 +37,5 @@ public:
 	Weight	_weight[100][100];
 	int boardWidth = 10;
 	int boardHeight = 10;
+	Node* p[100][100] = { nullptr };
 };

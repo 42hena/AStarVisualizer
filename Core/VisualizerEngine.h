@@ -14,6 +14,10 @@ public:
 	void Tick();
 	void Render();
 
+	void VisualWeight(HDC memDC);
+	void VisualPath(HDC memDC);
+	void VisualUIRender(HDC memDC);
+
 	void SetHWND(HWND hWnd) { _hWnd = hWnd; }
 public:
 	static VisualizerEngine* GetInstance();

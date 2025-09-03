@@ -48,14 +48,19 @@ void DrawNode(HDC hdc, PAINTSTRUCT ps)
 
     HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
 
+
+    int length = global_bufferLength;
+
+
+    // 노드 생성
     for (int i = 0; i < 50; ++i)
     {
         for (int j = 0; j < 50; ++j)
         {
-            int left = j * 50 + 1;
-            int right = (j + 1) * 50;
-            int top = i * 50 + 1;
-            int down = (i + 1) * 50;
+            int left = j * length + 1;
+            int right = (j + 1) * length;
+            int top = i * length + 1;
+            int down = (i + 1) * length;
             RECT rect = { left, top, right, down };
             if (GDIManager::GetInstance() == nullptr)
                 continue;
@@ -87,7 +92,7 @@ void DrawNode(HDC hdc, PAINTSTRUCT ps)
                 /*swprintf(buffer, 100, L"f: %.2lf", global_board._weight[i][j].f);
                 TextOut(hdc, left, top + 10, buffer, static_cast<int>(wcslen(buffer)));*/
 
-                rect.top = i * 50;
+                rect.top = i * length;
                 swprintf(buffer, 100, L"F: %2.2lf", global_board._weight[i][j].f);
                 DrawText(hdc, buffer, -1, &rect, DT_LEFT | DT_SINGLELINE);
 
@@ -102,6 +107,16 @@ void DrawNode(HDC hdc, PAINTSTRUCT ps)
             }
         }
     }
+
+    // 1. F, G, W 출력.
+
+    // 2. Close List까지의 현재 경로 출력.
+
+    // 3. 
+    
+
+    
+
     SelectObject(hdc, hOldFont);
 
 

@@ -49,7 +49,7 @@ class AStar
 public:
 	AStar();
 	//AStar(int sy, int sx, int ey, int ex);
-	~AStar() = default;
+	~AStar();
 
 public:
 	inline HWND GetHandleWindow() const { return _hWnd; }
@@ -63,11 +63,8 @@ public:
 
 	void Clear();
 
-public:
-	void ProcessStep();
-
-	void ProcessAll();
-
+	void ClearOpenList();
+	void ClearCloseList();
 
 private:
 	bool IsValidPosition(int posY, int posX);
@@ -75,11 +72,18 @@ private:
 
 
 public:/* 리스트 구현 */
-	void None();
-	void InitAStar();
-	void SearchDest();
-	void RecordPath();
-	void ClearBoard();
+	void NoneWithList();
+	void InitAStarWithList();
+	void SearchDestWithList();
+	void RecordPathWithList();
+	void ClearBoardWithList();
+
+public:
+	void NoneWithPQ();
+	void InitAStarWithPQ();
+	void SearchDestWithPQ();
+	void RecordPathWithPQ();
+	void ClearBoardWithPQ();
 
 public:
 	/* list로 구현 */
@@ -93,9 +97,8 @@ public:
 
 	float CalHValue(const Vector2& pos) const;
 
-	/*std::priority_queue<Node*, std::vector<Node*>, CompareNode>	_pq;
-	std::set<std::pair<int, int>>				_openList;
-	std::set<std::pair<int, int>>				_closeList;*/
+	std::priority_queue<Node*, std::vector<Node*>, CompareNode>	_openPQ;
+	std::set<Vector2>										_closeSet;
 
 	inline bool HasStartPos() const { return _hasStartPosFlag; }
 	inline bool HasDestPos() const { return _hasDestPosFlag; }

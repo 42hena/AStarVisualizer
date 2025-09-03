@@ -8,6 +8,10 @@
 *   내 헤더
 */
 
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "AStar/Vector2.h"
 #include "Event/InputEvent.h"
 #include "GDIManager.h"
@@ -32,6 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -104,6 +109,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     /* GDI 객체 해제 */
     GDIManager::Destroy();
+    InputManager::Destroy();
+    VisualizerEngine::Destroy();
     return (int) msg.wParam;
 }
 
@@ -194,14 +201,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    //case WM_PAINT:
-    //    {
-    //        PAINTSTRUCT ps;
-    //        HDC hdc = BeginPaint(hWnd, &ps);
-    //        // PaintProcess(hdc, ps);
-    //        EndPaint(hWnd, &ps);
-    //    }
-    //    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -228,19 +227,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONDOWN:
         {
             MouseRightButtonDownProcess(lParam);
-            //InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
     case WM_MOUSEMOVE:
         {
             MouseMovedProcess(lParam);
-            //InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
     case WM_KEYDOWN:
         {
             KeyboardProcess(wParam);
-            //InvalidateRect(hWnd, NULL, FALSE);
         }
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

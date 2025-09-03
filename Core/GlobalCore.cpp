@@ -5,3 +5,13 @@ bool global_mouseMiddleButton = false;
 
 AStar global_astar;
 Board global_board;
+
+int global_bufferLength = 48;	// TODO: 이름 변경
+int global_bufferMaxCount = 50;
+bool global_processFlag = false;
+
+int global_state = 0;
+
+// 0: None
+// 1: 가중치 Value 값.
+// 2: Path
