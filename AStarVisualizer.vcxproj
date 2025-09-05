@@ -127,6 +127,7 @@
     <ClInclude Include="AStar\AStar.h" />
     <ClInclude Include="AStar\Board.h" />
     <ClInclude Include="AStar\Vector2.h" />
+    <ClInclude Include="AStar\Weight.h" />
     <ClInclude Include="Core\GlobalCore.h" />
     <ClInclude Include="Core\VisualizerEngine.h" />
     <ClInclude Include="Event\InputEvent.h" />

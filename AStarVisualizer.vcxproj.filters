@@ -54,6 +54,9 @@
     <ClInclude Include="Core\VisualizerEngine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="AStar\Weight.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStarVisualizer.cpp">
