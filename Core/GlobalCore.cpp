@@ -3,7 +3,7 @@
 
 bool global_mouseMiddleButton = false;
 
-AStar global_astar;
+AStarWithList global_astar;
 Board global_board;
 
 int global_bufferLength = 48;	// TODO: 이름 변경
