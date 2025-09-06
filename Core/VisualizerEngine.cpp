@@ -300,20 +300,29 @@ void VisualizerEngine::DrawUI(HDC memDC)
     swprintf(outputBuffer, 100, L"A : 전부 진행");
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
 
+    
     uiRect.top += 20;
-    swprintf(outputBuffer, 100, L"Q : H(x): 맨하튼");
+    swprintf(outputBuffer, 100, L"Q : H(x): 유클리드");
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
 
     uiRect.top += 20;
-    swprintf(outputBuffer, 100, L"W : H(x): 유클리드");
+    swprintf(outputBuffer, 100, L"W : H(x): 옥타일");
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
 
     uiRect.top += 20;
-    swprintf(outputBuffer, 100, L"E : H(x): 옥타일");
+    swprintf(outputBuffer, 100, L"E : H(x): 체비쇼프");
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
 
     uiRect.top += 20;
-    swprintf(outputBuffer, 100, L"R : H(x): 체비뭐시기");
+    
+    std::wstring state;
+    if (global_astar._calState == 0)
+        state = L"유클리드";
+    if (global_astar._calState == 1)
+        state = L"옥타일";
+    if (global_astar._calState == 2)
+        state = L"체비쇼프";
+    swprintf(outputBuffer, 100, L"현재 선택된 휴리스틱: %s", state.c_str());
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
 
     DeleteObject(hUIFont);

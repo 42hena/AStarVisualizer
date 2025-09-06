@@ -98,13 +98,14 @@ void MouseMovedProcess(LPARAM lParam)
         int boardXIndex = mousePosX / length;
         int boardYIndex = mousePosY / length;
 
+        int boardType = global_board._boardInfo[boardYIndex][boardXIndex].type;
         // 현재 지점이 시작 좌표의 경우 시작 지점의 플레그를 삭제.
-        if (global_board._boardInfo[boardYIndex][boardXIndex].type == Start) {
+        if (boardType == Start) {
             global_astar.SetStartFalseFlag();
         }
 
         // 현재 지점이 도착 좌표의 경우 도착 지점의 플레그를 삭제.
-        if (global_board._boardInfo[boardYIndex][boardXIndex].type == End) {
+        if (boardType == End) {
             global_astar.SetDestFalseFlag();
         }
 
@@ -171,7 +172,27 @@ void KeyboardProcess(WPARAM wParam)
         {
             ChangeDebugState();
         }
-    break;
+        break;
+    case 'Q':
+        {
+            global_astar._calState = 0;
+        }
+        break;
+    case 'W':
+        {
+            global_astar._calState = 1;
+        }
+        break;
+    case 'E':
+        {
+            global_astar._calState = 2;
+        }
+        break;
+    case 'C':
+        {
+            global_astar.ClearBoardWithList();
+        }
+        break;
     case VK_PRIOR:  // PageUp
         {
             TryEnlargeSize();

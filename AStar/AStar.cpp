@@ -6,15 +6,22 @@
 #include <math.h>
 #include <Windows.h>
 
+struct DirInfo
+{
+	Vector2 pos;
+	float value[3];
+};
+
+
+std::vector<DirInfo> dirInfo{
+		{Vector2(1, 0), {1.0f, 1.0f, 1.0f}},{Vector2(-1, 0), {1.0f, 1.0f, 1.0f}},{Vector2(0, 1), {1.0f, 1.0f, 1.0f}},{Vector2(0, -1), {1.0f, 1.0f, 1.0f}},
+		{Vector2(1, 1), {1.414f, 1.0f, 1.414f} },{Vector2(1, -1), {1.414f, 1.0f, 1.414f}},{Vector2(-1, 1), {1.414f, 1.0f, 1.414f}},{Vector2(-1, -1), {1.414f, 1.0f, 1.414f}},
+};
+
 /*
 *		AStar의 특수 맴버 함수
 */
 
-struct DirInfo
-{
-	Vector2 pos;
-	float value;
-};
 
 AStarWithList::AStarWithList()
 	: _startPosition(-1, -1),
@@ -232,10 +239,7 @@ void AStarWithList::SearchDestWithList()
 		return;
 	}
 
-	std::vector<DirInfo> dirInfo{
-		{Vector2(1, 0), 1.0f},{Vector2(-1, 0), 1.0f},{Vector2(0, 1), 1.0f},{Vector2(0, -1), 1.0f},
-		{Vector2(1, 1), 1.414f},{Vector2(1, -1), 1.414f},{Vector2(-1, 1), 1.414f},{Vector2(-1, -1), 1.414f},
-	};
+	
 
 	// 4단계: 다음 방문 가능한 노드를 탐색
 	for (int dir = 0; dir < 8; ++dir)
@@ -262,7 +266,7 @@ void AStarWithList::SearchDestWithList()
 		}
 
 		// 다음 가중치 계산
-		float nextGValue = pMinNode->weight.g + dirInfo[dir].value;
+		float nextGValue = pMinNode->weight.g + dirInfo[dir].value[_calState];
 		float nextHValue = CalHValue(nextPos);
 		float nextFValue = nextGValue + nextHValue;
 		Weight nextWeight{ nextGValue , nextHValue, nextFValue };
@@ -352,6 +356,32 @@ void AStarWithList::ClearBoardWithList()
 	_state = NoneLevel;
 }
 
+void AStarWithList::ClearBoardExceptWallWithList()
+{
+	// OpenList 및 CloseList 삭제.
+	ClearOpenList();
+	ClearCloseList();
+
+	// Board 판 정리
+	for (int i = 0; i < Board::MAX_HEIGHT; ++i)
+	{
+		for (int j = 0; j < Board::MAX_WIDTH; ++j)
+		{
+			if (global_board._boardInfo[i][j].type == Wall) {
+				continue;
+			}
+			memset(&global_board._boardInfo[i][j], 0, sizeof(BoardInfo));
+		}
+	}
+
+	lastNode = nullptr;
+
+	SetStartFalseFlag();
+	SetDestFalseFlag();
+
+	_state = NoneLevel;
+}
+
 
 
 void AStarWithList::SearchWithList()
@@ -371,7 +401,7 @@ void AStarWithList::SearchWithList()
 		RecordPathWithList();
 		break;
 	case ClearLevel:
-		ClearBoardWithList();
+		ClearBoardExceptWallWithList();
 		break;
 	default:
 		break;
@@ -385,6 +415,21 @@ float AStarWithList::CalHValue(const Vector2& pos) const
 	int dx = pos._x - GetDestPosX();
 	int dy = pos._y - GetDestPosY();
 
+	int calState = 0;
+	switch (calState)
+	{
+	case 0:
+		return static_cast<float>(sqrt(dx * dx + dy * dy));
+	case 1:
+	{
+		int minValue = min(abs(dx), abs(dy));
+		return static_cast<float>(minValue + (abs(dx) - minValue) + (abs(dy) - minValue));
+	}
+	case 2:
+		return static_cast<float>(max(dx, dy));
+	default:
+		break;
+	}
 	return static_cast<float>(sqrt( dx * dx + dy * dy ) );
 	return static_cast<float>(abs(dx) + abs(dy));
 }
