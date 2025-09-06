@@ -1,11 +1,7 @@
 ﻿#pragma once
 
-struct Weight
-{
-	float f = 0.0;
-	float g = 0.0;
-	float h = 0.0;
-};
+#include "Weight.h"
+#include <memory>
 
 enum ObjectState
 {
@@ -19,8 +15,23 @@ enum ObjectState
 };
 
 class Node;
+
+// TODO
+struct BoardInfo
+{
+	int		type;
+	Weight	weight;
+	// Node*	parent;
+};
+
 class Board
 {
+public:
+	enum BOARD
+	{
+		MAX_WIDTH = 100,
+		MAX_HEIGHT = 100,
+	};
 public:
 	Board()
 	{
@@ -28,14 +39,14 @@ public:
 		{
 			for (int j = 0; j < 50; ++j)
 			{
-				_board[i][j] = 0;
+				memset(&_boardInfo[i][j], 0, sizeof(BoardInfo));
 			}
 		}
 	}
 
-	int		_board[100][100];
+	/*int		_board[100][100];
 	Weight	_weight[100][100];
-	int boardWidth = 10;
-	int boardHeight = 10;
-	Node* p[100][100] = { nullptr };
+	Node* p[100][100] = { nullptr };*/
+
+	BoardInfo _boardInfo[100][100];
 };

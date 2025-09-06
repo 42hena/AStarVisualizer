@@ -43,7 +43,7 @@ VisualizerEngine::VisualizerEngine()
     pAStarList = new AStarWithList();
 
     // 우선순위 큐로 구현된 AStar 생성
-    pAStarPQ = new AStarWithPQ();
+    //pAStarPQ = new AStarWithPQ();
 
     // 보드 생성
 	pBoard = new Board();
@@ -62,11 +62,11 @@ VisualizerEngine::~VisualizerEngine()
     }
 
     // PQ로 만든 AStar 삭제
-    if (pAStarPQ != nullptr)
+    /*if (pAStarPQ != nullptr)
     {
         delete pAStarPQ;
         pAStarPQ = nullptr;
-    }
+    }*/
 
     // Board 삭제
     if (pBoard != nullptr)
@@ -159,6 +159,10 @@ void VisualizerEngine::Render()
 
 void VisualizerEngine::VisualNode(HDC memDC)
 {
+    if (global_astar._hasStartPosFlag == false || global_astar._hasDestPosFlag == false) {
+        return;
+    }
+
     Vector2 startPos = global_astar.GetStartPosition();
     Vector2 destPos = global_astar.GetDestPosition();
 
@@ -189,7 +193,6 @@ void VisualizerEngine::VisualWeight(HDC memDC)
 {
     wchar_t outputBuffer[256];
     int length = global_bufferLength;
-    int maxBoardSize = global_bufferMaxCount;
     int fontSize = length / 4;
 
     // GDI 객체의 폰트 생성
@@ -199,9 +202,9 @@ void VisualizerEngine::VisualWeight(HDC memDC)
     SetBkMode(memDC, TRANSPARENT);
 
     SelectObject(memDC, hUIFont);
-    for (int i = 0; i < maxBoardSize; ++i)
+    for (int i = 0; i < Board::MAX_HEIGHT; ++i)
     {
-        for (int j = 0; j < maxBoardSize; ++j)
+        for (int j = 0; j < Board::MAX_WIDTH; ++j)
         {
             int left = j * length + 1;
             int right = (j + 1) * length;
@@ -210,22 +213,22 @@ void VisualizerEngine::VisualWeight(HDC memDC)
             RECT rect = { left, top, right, down };
 
 
-            int type = global_board._board[i][j];
+            int type = global_board._boardInfo[i][j].type;
             // 현재 타입이 None이거나 장애물의 경우
             if (type == None || type == Wall) {
                 continue;
             }
 
             rect.top = i * length + 1;
-            swprintf(outputBuffer, 100, L"F:%2.2lf", global_board._weight[i][j].f);
+            swprintf(outputBuffer, 100, L"F:%2.2lf", global_board._boardInfo[i][j].weight.f);
             DrawText(memDC, outputBuffer, -1, &rect, DT_LEFT | DT_SINGLELINE);
 
             rect.top += fontSize;
-            swprintf(outputBuffer, 100, L"G:%2.2lf", global_board._weight[i][j].g);
+            swprintf(outputBuffer, 100, L"G:%2.2lf", global_board._boardInfo[i][j].weight.g);
             DrawText(memDC, outputBuffer, -1, &rect, DT_LEFT | DT_SINGLELINE);
 
             rect.top += fontSize;
-            swprintf(outputBuffer, 100, L"H:%2.2lf", global_board._weight[i][j].h);
+            swprintf(outputBuffer, 100, L"H:%2.2lf", global_board._boardInfo[i][j].weight.h);
             DrawText(memDC, outputBuffer, -1, &rect, DT_LEFT | DT_SINGLELINE);
         }
     }
@@ -237,7 +240,6 @@ void VisualizerEngine::VisualPath(HDC memDC)
 {
     wchar_t outputBuffer[256];
     int length = global_bufferLength;
-    int maxBoardSize = global_bufferMaxCount;
     int fontSize = length / 4;
 
     Node* cur = global_astar.lastNode;
@@ -247,8 +249,8 @@ void VisualizerEngine::VisualPath(HDC memDC)
         if (next != nullptr)
         {
             SelectObject(memDC, GDIManager::GetInstance()->GetBrush("red"));
-            MoveToEx(memDC, cur->pos._x * global_bufferLength + 25, cur->pos._y * global_bufferLength + 25, NULL);  // 시작 좌표 지정
-            LineTo(memDC, next->pos._x * global_bufferLength + 25, next->pos._y * global_bufferLength + 25);
+            MoveToEx(memDC, cur->pos._x * global_bufferLength + global_bufferLength / 2, cur->pos._y * global_bufferLength + global_bufferLength / 2, NULL);  // 시작 좌표 지정
+            LineTo(memDC, next->pos._x * global_bufferLength + global_bufferLength / 2, next->pos._y * global_bufferLength + global_bufferLength / 2);
             next = next->parentNode;
         }
         cur = cur->parentNode;
@@ -313,12 +315,13 @@ void VisualizerEngine::DrawUI(HDC memDC)
     uiRect.top += 20;
     swprintf(outputBuffer, 100, L"R : H(x): 체비뭐시기");
     DrawText(memDC, outputBuffer, -1, &uiRect, DT_LEFT | DT_SINGLELINE);
+
+    DeleteObject(hUIFont);
 }
 
 void VisualizerEngine::ClearGridBackground(HDC memDC)
 {
     HWND hWnd = _hWnd;
-    HDC hdc = GetDC(hWnd);
 
     RECT rcClient;
     GetClientRect(hWnd, &rcClient);  // 클라이언트 영역 가져오기
@@ -333,7 +336,6 @@ void VisualizerEngine::ClearGridBackground(HDC memDC)
 void VisualizerEngine::DrawGridLines(HDC memDC)
 {
     HWND hWnd = _hWnd;
-    HDC hdc = GetDC(hWnd);
 
     RECT rcClient;
     GetClientRect(hWnd, &rcClient);
@@ -360,7 +362,6 @@ void VisualizerEngine::DrawCellByState(HDC memDC)
 {
     int length = global_bufferLength;
 
-    // TODO: 50을 다른 걸로
     for (int i = 0; i < Board::MAX_HEIGHT; ++i)
     {
         for (int j = 0; j < Board::MAX_WIDTH; ++j)
@@ -377,7 +378,7 @@ void VisualizerEngine::DrawCellByState(HDC memDC)
             }
 
             // 노드 타입 확인 및 사각형 그리기
-            int nodeType = global_board._board[i][j];
+            int nodeType = global_board._boardInfo[i][j].type;
             switch (nodeType)
             {
             /*

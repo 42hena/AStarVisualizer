@@ -1,14 +1,12 @@
 ﻿#pragma once
 #pragma once
 #include <Windows.h>
-namespace Utils {
+namespace Utils
+{
 	inline HBRUSH CreateBrush(int r, int g, int b)
 	{
 		return CreateSolidBrush(RGB(r, g, b));
 	}
-
-
-
 }
 
 void DrawBackGround(HDC hdc, PAINTSTRUCT ps);

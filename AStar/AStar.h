@@ -20,16 +20,16 @@ public:
 
 	Vector2	pos;
 
-	float	gValue = 0.0;
-	float	hValue = 0.0;
-	float	fValue = 0.0;
+	//float	gValue = 0.0;
+	//float	hValue = 0.0;
+	//float	fValue = 0.0;
 	
 	Weight weight;
 };
 
 struct CompareNode {
 	bool operator()(const Node* a, const Node* b) const {
-		return a->fValue > b->fValue; // fCost가 작은 게 더 우선
+		return b->weight < a->weight; // fCost가 작은 게 더 우선
 	}
 };
 

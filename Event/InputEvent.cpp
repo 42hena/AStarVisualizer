@@ -22,7 +22,7 @@ void MouseLeftButtonDownProcess(LPARAM lParam)
     // 시작 지점이 이미 존재하는 지 확인.
     if (global_astar.HasStartPos() == true) {
         // 이전 시작 지점을 None 상태로 변경
-        global_board._board[global_astar.GetStartPosY()][global_astar.GetStartPosX()] = 0;
+        global_board._boardInfo[global_astar.GetStartPosY()][global_astar.GetStartPosX()].type = None;
     }
     
     // 시작점 세팅 플래그를 True로 변경
@@ -33,12 +33,12 @@ void MouseLeftButtonDownProcess(LPARAM lParam)
     global_astar.SetStartPosition(newPosition);
 
     // 시작 목표 지점 좌표 세팅
-    if (global_board._board[boardYIndex][boardXIndex] == Close) {
+    if (global_board._boardInfo[boardYIndex][boardXIndex].type == Close) {
         global_astar.SetDestFalseFlag();
     }
 
     // 현재 Board 좌표를 Start 상태로 변경
-    global_board._board[boardYIndex][boardXIndex] = Start;
+    global_board._boardInfo[boardYIndex][boardXIndex].type = Start;
 }
 
 void MouseMiddleButtonDownProcess(LPARAM lParam)
@@ -66,7 +66,7 @@ void MouseRightButtonDownProcess(LPARAM lParam)
     // 도착 지점이 이미 존재하는 지 확인.
     if (global_astar.HasDestPos() == true) {
         // 이전 도착 지점을 None 상태로 변경
-        global_board._board[global_astar.GetDestPosY()][global_astar.GetDestPosX()] = None;
+        global_board._boardInfo[global_astar.GetDestPosY()][global_astar.GetDestPosX()].type = None;
     }
 
     // 도착점 세팅 플래그를 True로 변경
@@ -77,12 +77,12 @@ void MouseRightButtonDownProcess(LPARAM lParam)
     global_astar.SetDestPosition(newPosition);
 
     // 현재 지점이 시작 좌표의 경우 시작 지점의 플레그를 삭제.
-    if (global_board._board[boardYIndex][boardXIndex] == Start) {
+    if (global_board._boardInfo[boardYIndex][boardXIndex].type == Start) {
         global_astar.SetStartFalseFlag();
     }
 
     // 현재 Board 좌표를 End 상태로 변경
-    global_board._board[boardYIndex][boardXIndex] = End;
+    global_board._boardInfo[boardYIndex][boardXIndex].type = End;
 }
 
 void MouseMovedProcess(LPARAM lParam)
@@ -99,17 +99,17 @@ void MouseMovedProcess(LPARAM lParam)
         int boardYIndex = mousePosY / length;
 
         // 현재 지점이 시작 좌표의 경우 시작 지점의 플레그를 삭제.
-        if (global_board._board[boardYIndex][boardXIndex] == Start) {
+        if (global_board._boardInfo[boardYIndex][boardXIndex].type == Start) {
             global_astar.SetStartFalseFlag();
         }
 
         // 현재 지점이 도착 좌표의 경우 도착 지점의 플레그를 삭제.
-        if (global_board._board[boardYIndex][boardXIndex] == End) {
+        if (global_board._boardInfo[boardYIndex][boardXIndex].type == End) {
             global_astar.SetDestFalseFlag();
         }
 
         // 현재 좌표를 Wall 상태로 변경
-        global_board._board[boardYIndex][boardXIndex] = Wall;
+        global_board._boardInfo[boardYIndex][boardXIndex].type = Wall;
     }
 }
 
@@ -125,7 +125,7 @@ void TryEnlargeSize()
 void TryShrinkSize()
 {
     // 최소 사이즈보다 작아지는거 방지
-    if (global_bufferLength / 2 <= 12) {    // TODO: 매직 넘버로 바꿔야 함.
+    if (global_bufferLength / 2 <= 6) {    // TODO: 매직 넘버로 바꿔야 함.
         return;
     }
     global_bufferLength = global_bufferLength / 2;
@@ -138,6 +138,10 @@ void ChangeDebugState()
 
 void SearchAll()
 {
+    if (global_astar._hasStartPosFlag == false || global_astar._hasDestPosFlag == false) {
+        return;
+    }
+
     // ClearLevel 상태 이전까지 돌기
     while (global_astar._state != ClearLevel) {
         global_astar.SearchWithList();

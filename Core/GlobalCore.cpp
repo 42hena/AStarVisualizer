@@ -7,7 +7,6 @@ AStarWithList global_astar;
 Board global_board;
 
 int global_bufferLength = 48;	// TODO: 이름 변경
-int global_bufferMaxCount = 50;
 bool global_processFlag = false;
 
 int global_state = 0;
